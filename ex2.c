@@ -16,7 +16,7 @@ static void swap_endian(unsigned short *c);
 int main(int argc, char **argv) {
 
   FILE *f1, *f2;
-  unsigned short c = 0;
+  unsigned char c[2];
 
   if ((f1 = fopen(argv[1], "rb")) == 0) {
     printf("First file not found.");
