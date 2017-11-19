@@ -4,12 +4,12 @@
 #include <string.h>
 
 #define UNIXNL 10
-#define MACNL 14
-#define WINNL 24
+#define MACNL 13
+#define WINNL 23
 #define SWAP 1
 #define KEEP 0
 
-static void switch_OS_NL(FILE *f1, FILE *f2, short os_src_NL, short
+static void switch_OS_NL(FILE *f1, FILE *f2, unsigned short os_src_NL, unsigned short
 os_dest_NL, char swap);
 static void swap_endian(unsigned short *c);
 
@@ -38,17 +38,27 @@ int main(int argc, char **argv) {
     case 5:
     case 6: {
       if (argc == 5 || strcmp(argv[5], "-swap") != 0) {
-        if (strcmp(argv[3], "-unix") == 0 && strcmp(argv[4], "-mac") == 0) {
+        if (strcmp(argv[3], "-unix") == 0
+            && strcmp(argv[4], "-unix") == 0) {
+          switch_OS_NL(f1, f2, UNIXNL, UNIXNL, KEEP);
+        } else if (strcmp(argv[3], "-unix") == 0
+            && strcmp(argv[4], "-mac") == 0) {
           switch_OS_NL(f1, f2, UNIXNL, MACNL, KEEP);
         } else if (strcmp(argv[3], "-unix") == 0
             && strcmp(argv[4], "-win") == 0) {
           switch_OS_NL(f1, f2, UNIXNL, WINNL, KEEP);
+        } else if (strcmp(argv[3], "-mac") == 0
+            && strcmp(argv[4], "-mac") == 0) {
+          switch_OS_NL(f1, f2, MACNL, MACNL, KEEP);
         } else if (strcmp(argv[3], "-mac") == 0
             && strcmp(argv[4], "-unix") == 0) {
           switch_OS_NL(f1, f2, MACNL, UNIXNL, KEEP);
         } else if (strcmp(argv[3], "-mac") == 0
             && strcmp(argv[4], "-win") == 0) {
           switch_OS_NL(f1, f2, MACNL, WINNL, KEEP);
+        } else if (strcmp(argv[3], "-win") == 0
+            && strcmp(argv[4], "-win") == 0) {
+          switch_OS_NL(f1, f2, WINNL, WINNL, KEEP);
         } else if (strcmp(argv[3], "-win") == 0
             && strcmp(argv[4], "-unix") == 0) {
           switch_OS_NL(f1, f2, WINNL, UNIXNL, KEEP);
@@ -57,17 +67,27 @@ int main(int argc, char **argv) {
           switch_OS_NL(f1, f2, WINNL, MACNL, KEEP);
         }
       } else {
-        if (strcmp(argv[3], "-unix") == 0 && strcmp(argv[4], "-mac") == 0) {
+        if (strcmp(argv[3], "-unix") == 0
+            && strcmp(argv[4], "-unix") == 0) {
+          switch_OS_NL(f1, f2, UNIXNL, UNIXNL, SWAP);
+        } else if (strcmp(argv[3], "-unix") == 0
+            && strcmp(argv[4], "-mac") == 0) {
           switch_OS_NL(f1, f2, UNIXNL, MACNL, SWAP);
         } else if (strcmp(argv[3], "-unix") == 0
             && strcmp(argv[4], "-win") == 0) {
           switch_OS_NL(f1, f2, UNIXNL, WINNL, SWAP);
+        } else if (strcmp(argv[3], "-mac") == 0
+            && strcmp(argv[4], "-mac") == 0) {
+          switch_OS_NL(f1, f2, MACNL, MACNL, SWAP);
         } else if (strcmp(argv[3], "-mac") == 0
             && strcmp(argv[4], "-unix") == 0) {
           switch_OS_NL(f1, f2, MACNL, UNIXNL, SWAP);
         } else if (strcmp(argv[3], "-mac") == 0
             && strcmp(argv[4], "-win") == 0) {
           switch_OS_NL(f1, f2, MACNL, WINNL, SWAP);
+        } else if (strcmp(argv[3], "-win") == 0
+            && strcmp(argv[4], "-win") == 0) {
+          switch_OS_NL(f1, f2, WINNL, WINNL, SWAP);
         } else if (strcmp(argv[3], "-win") == 0
             && strcmp(argv[4], "-unix") == 0) {
           switch_OS_NL(f1, f2, WINNL, UNIXNL, SWAP);
@@ -87,17 +107,17 @@ int main(int argc, char **argv) {
   return 0;
 }
 
-static void switch_OS_NL(FILE *f1, FILE *f2, short os_src_NL, short
+static void switch_OS_NL(FILE *f1, FILE *f2, unsigned short os_src_NL, unsigned short
 os_dest_NL, char swap) {
-  unsigned short c = 0;
+  unsigned short c;
   unsigned short temp;
 
   while (fread(&c, sizeof(short), 1, f1) == 1) {
-    if (os_src_NL == WINNL && c == 14) {
+    if (os_src_NL == WINNL && c == 13) {
       temp = c;
       fread(&c, sizeof(short), 1, f1);
       if (c == 10) {
-        c = 24;
+        c = 23;
       } else {
         if (swap) {
           swap_endian(&temp);
@@ -119,7 +139,7 @@ os_dest_NL, char swap) {
         }
         fwrite(&c, sizeof(short), 1, f2);
       } else {
-        c = 14;
+        c = 13;
         if (swap) {
           swap_endian(&c);
         }
